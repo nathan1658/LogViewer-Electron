@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="./css/default.css" />
 
   <link rel="stylesheet" media="screen" type="text/css" href="css/colorpicker.css" />
+
+
   <script src="./js/colorpicker.js"></script>
   <script>if (window.module) module = window.module;</script>
   <script>
@@ -48,7 +50,8 @@
     var rgbArr = [];
 
     var LOG_LEVELS = ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"];
-
+    //For Monaco editor
+    var decorations = null ;
 
 
 
@@ -348,7 +351,8 @@ var fs = require('fs');
         readOnly: true,
         minimap: {
 	  	    enabled: true
-	      }
+        },
+        language: "javascript"
       });
       _editor = editor;
     monaco.editor.setTheme('vs-dark');    
@@ -417,6 +421,7 @@ var fs = require('fs');
             },
             onChange: function (hsb, hex, rgb) {
               $(`#${cpId}`).css('backgroundColor', '#' + hex);
+              
               $(`.${tmpId}`).css('color', '#' + hex);
             }
           });
@@ -649,7 +654,9 @@ var fs = require('fs');
       //updateColorPicker background css and perform update on fonts.
       var newCss = colorPickerCss.replace(/rgb\(.*?\)/gm, rgbString);
       tmpCp.css('background', newCss);
-      $(`.${id}`).css('color', rgbToHex(rgb));
+      $(`.view-line span`).css('color', rgbToHex(rgb));
+      
+      //$(`.${id}`).css('color', rgbToHex(rgb));
     }
 
     function getRGBfromString(str) {
@@ -704,6 +711,8 @@ var fs = require('fs');
           return val.toLowerCase().indexOf(e.toLowerCase()) > 0;
         })
       }
+      
+
 
       var stringArr = [];
       logArr.forEach(function (val) {
@@ -720,6 +729,26 @@ var fs = require('fs');
         resultArray.push(val);
         stringArr.push(val.content);
       });
+//For decorations..
+        var tResult = [];
+       resultArray.forEach((e)=>{
+          var te = e.content.split("\n");
+          te.forEach((y)=>
+          {if(y.length>0)
+            {tResult.push({content:y,id:e.id});
+          }
+          })
+       });
+
+var rangeArr = [];
+        for(var i=0;i<tResult.length;i++)
+        {
+          
+          var tmpText = tResult[i].content;
+            rangeArr.push({ range: new monaco.Range(i+1,1,i+1,tmpText.length), options: {  inlineClassName: tResult[i].id}});
+          //  rangeArr.push({ range: new monaco.Range(1,0,999,20), options: {  linesDecorationsClassName:"sadsad"}});
+        }
+
 
       $("#LogArea").empty();
       console.time("forLoop appendText");
@@ -730,7 +759,21 @@ var fs = require('fs');
 
 
 	amdRequire(['vs/editor/editor.main'], function() {
-    _editor.setModel(monaco.editor.createModel(stringArr.join(''), ''));    
+
+    //Clear all decorations
+    decorations = _editor.deltaDecorations([], [
+//	{ range: new monaco.Range(3,1,5,1), options: { isWholeLine: true, linesDecorationsClassName: 'myLineDecoration' }},
+	  { range: new monaco.Range(1,0,_editor.viewModel.getLineCount(),24), options: { }},
+    
+    ]);
+var err = [];
+err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInlineDecoration' }});
+	err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInlineDecorationfdsfdsf' }});
+    _editor.setModel(monaco.editor.createModel(tResult.map(a=>a.content).join(''), ''));    
+    
+    decorations = _editor.deltaDecorations(decorations,rangeArr);
+  // decorations = _editor.deltaDecorations(decorations,{ range: new monaco.Range(1,0,999,20), options: {  linesDecorationsClassName:"sadsad"}});
+
   });
 
 
@@ -744,7 +787,7 @@ var fs = require('fs');
       //   var val = resultArray[i];
       //   fragment.appendChild(appendText(val.content, val.id, lineNumber++));
       // }
-      document.getElementById("LogArea").appendChild(fragment);
+      
       console.timeEnd("forLoop appendText");
 
       //FIX work around for selecting last line
@@ -1032,8 +1075,7 @@ var fs = require('fs');
   </div>
 
     <div id="container" style="width:100%;height: calc(100% - 35px);"></div>
-  
-   <div style="height: 97%;overflow: auto;will-change:transform;dispaly:none" id="LogArea"></div>
+     
 
   </div>
 </body>
