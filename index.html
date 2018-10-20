@@ -347,7 +347,7 @@ var fs = require('fs');
 				].join('\n'),				
         readOnly: true,
         minimap: {
-	  	    enabled: false
+	  	    enabled: true
 	      }
       });
       _editor = editor;
@@ -1031,7 +1031,7 @@ var fs = require('fs');
     </div>
   </div>
 
-    <div id="container" style="width:100%;height:100%;"></div>
+    <div id="container" style="width:100%;height: calc(100% - 35px);"></div>
   
    <div style="height: 97%;overflow: auto;will-change:transform;dispaly:none" id="LogArea"></div>
 
