@@ -161,7 +161,7 @@
       config.LogFileArr.forEach(function (x, index) {
         $("#tb" + (index + 1)).val(x);
         var tmpID = idArr[index];
-        setCPColorAndUpdate(tmpID, config.rgbArr[index]);
+        AddOrUpdateCustomCss(tmpID, config.rgbArr[index]);
       });
 
 
@@ -186,7 +186,15 @@
     }
 
     function getId() {
-      return Math.random().toString(36).substring(7);
+      var result =  Math.random().toString(36).substring(7);
+      var firstChar = result.charAt(0);
+      while( firstChar <='9' && firstChar >='0') {
+        result =  Math.random().toString(36).substring(7);
+       firstChar = result.charAt(0);
+}
+
+  return result;
+
     }
     function sortlogArrByDatetime(a, b) {
       var aDate = a.datetime;
@@ -351,8 +359,7 @@ var fs = require('fs');
         readOnly: true,
         minimap: {
 	  	    enabled: true
-        },
-        language: "javascript"
+        }
       });
       _editor = editor;
     monaco.editor.setTheme('vs-dark');    
@@ -421,8 +428,8 @@ var fs = require('fs');
             },
             onChange: function (hsb, hex, rgb) {
               $(`#${cpId}`).css('backgroundColor', '#' + hex);
-              
-              $(`.${tmpId}`).css('color', '#' + hex);
+              AddOrUpdateCustomCss(`${tmpId}`, '#' + hex);
+//              $(`.${tmpId}`).css('color', '#' + hex);
             }
           });
           var part1 = `<div style="padding:5px;display:flex;align-items:center;" id="div${iCnt}"> <input type='checkbox' onchange="checkboxOnChange(this,'${tmpId}')" checked/> `;
@@ -653,9 +660,8 @@ var fs = require('fs');
       var rgbString = rgbToString(rgb);
       //updateColorPicker background css and perform update on fonts.
       var newCss = colorPickerCss.replace(/rgb\(.*?\)/gm, rgbString);
-      tmpCp.css('background', newCss);
-      $(`.view-line span`).css('color', rgbToHex(rgb));
-      
+      tmpCp.css('background', newCss);   
+      setCPColorAndUpdate(id,rgbToHex(rgb));
       //$(`.${id}`).css('color', rgbToHex(rgb));
     }
 
@@ -712,8 +718,6 @@ var fs = require('fs');
         })
       }
       
-
-
       var stringArr = [];
       logArr.forEach(function (val) {
         if (!checkedLogFile.includes(val.id))
@@ -746,7 +750,7 @@ var rangeArr = [];
           
           var tmpText = tResult[i].content;
             rangeArr.push({ range: new monaco.Range(i+1,1,i+1,tmpText.length), options: {  inlineClassName: tResult[i].id}});
-          //  rangeArr.push({ range: new monaco.Range(1,0,999,20), options: {  linesDecorationsClassName:"sadsad"}});
+          
         }
 
 
@@ -766,52 +770,11 @@ var rangeArr = [];
 	  { range: new monaco.Range(1,0,_editor.viewModel.getLineCount(),24), options: { }},
     
     ]);
-var err = [];
-err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInlineDecoration' }});
-	err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInlineDecorationfdsfdsf' }});
+
     _editor.setModel(monaco.editor.createModel(tResult.map(a=>a.content).join(''), ''));    
     
     decorations = _editor.deltaDecorations(decorations,rangeArr);
   // decorations = _editor.deltaDecorations(decorations,{ range: new monaco.Range(1,0,999,20), options: {  linesDecorationsClassName:"sadsad"}});
-
-  });
-
-
-
-
-
-
-
-      var lineNumber = 1;
-      // for (var i = 0; i < resultArray.length; i++) {
-      //   var val = resultArray[i];
-      //   fragment.appendChild(appendText(val.content, val.id, lineNumber++));
-      // }
-      
-      console.timeEnd("forLoop appendText");
-
-      //FIX work around for selecting last line
-      $('#LogArea').append(appendText("&zwnj;", "noselect", ""));
-      //FIX put it a better way?
-      $('.logRow').click(function () {
-        var className = "ClickHighLightedBackground";
-        if ($(this).hasClass(className)) {
-          $(this).removeClass(className);
-        }
-        else {
-          $(".logRow").removeClass(className);
-          $(this).addClass(className)
-        }
-      });
-      $(".logRow").hover(function () {
-        var className = "highLightedBackground";
-        if (!$(this).hasClass(className)) {
-          $(this).addClass(className)
-        }
-      }, function () {
-        var className = "highLightedBackground";
-        $(this).removeClass(className);
-      });
 
 
 
@@ -820,8 +783,15 @@ err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInl
         var tmpString = $('#' + idArr[i] + '_CP').css("background");
         //append to target class background
         var rgbStr = tmpString.match(/rgb\(.*?\)/);
-        $('.' + idArr[i]).css("color", rgbStr[0]);
+
+        AddOrUpdateCustomCss(idArr[i],rgbStr);
       }
+  });
+
+      console.timeEnd("forLoop appendText");
+     
+
+
       console.timeEnd("updateLogAreaWithFilter");
       //update line number width      
       try {
@@ -839,6 +809,38 @@ err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInl
       $("#NumOfLog").text(resultArray.length);
       $(".loader").css("visibility", "hidden");
     }
+
+
+function AddOrUpdateCustomCss(cssId, rgbVal)
+{
+  var result;
+var SS = document.styleSheets;
+for(var i=0; i<SS.length; i++) {
+   var s = SS[i];
+   if(s.ownerNode.id=="customCss")
+   result = s;
+}
+
+var cssRule = null;
+for(var i=0; i<result.cssRules.length; i++) {
+   var s = result.cssRules[i];
+   if(s.selectorText=='.'+cssId)
+   {cssRule = s;
+   break
+   }
+}
+if(cssRule==null)//notExist
+{
+  document.getElementById('customCss').innerHTML+=`.${cssId}{color:${rgbVal}}`;
+}
+else
+{
+  cssRule.style.color=rgbVal;
+}
+}
+
+
+
     function gogogo() {
       $(".loader").css("visibility", "visible");
       console.time("gogogo");
@@ -1078,6 +1080,7 @@ err.push({ range: new monaco.Range(1,0,1,24), options: { inlineClassName: 'myInl
      
 
   </div>
+  <style id="customCss"></style>
 </body>
 
 </html>
