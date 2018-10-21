@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <!--TODO line number/seperate between files?-->
 <!--TODO 自動reload&Resume去原先個位? Blink新加果行? -->
 <!--TODO auto gen color-->
@@ -352,9 +352,7 @@ var fs = require('fs');
 	amdRequire(['vs/editor/editor.main'], function() {
 			var editor = monaco.editor.create(document.getElementById('container'), {
 				value: [
-					'function x() {',
-					'\tconsole.log("Hello wordld!");',
-					'}'
+					':)'
 				].join('\n'),				
         readOnly: true,
         minimap: {
