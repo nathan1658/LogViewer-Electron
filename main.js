@@ -8,12 +8,12 @@ let mainWindow
 function createWindow () {
   // Create the browser window.
   let {width, height} = require('electron').screen.getPrimaryDisplay().size;
-
-  mainWindow = new BrowserWindow({width: width, height: height,frame:false, webPreferences:{devTools:true}})
-  
+  app.commandLine.appendSwitch('disable-web-security'); // try add this line
+  mainWindow = new BrowserWindow({width: width, height: height,frame:false, webPreferences:{devTools:true, webSecurity: false}})
+  app.commandLine.appendSwitch('ignore-certificate-errors');
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-
+	
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
@@ -39,7 +39,14 @@ app.on('window-all-closed', function () {
     app.quit()
   }
 })
+   // SSL/TSL: this is the self signed certificate support
+    app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
 
+        // On certificate error we disable default behaviour (stop loading the page)
+        // and we then say "it is all fine - true" to the callback
+        event.preventDefault();
+        callback(true);
+    });
 app.on('activate', function () {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
