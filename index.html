@@ -87,13 +87,14 @@
         }
       });
     }
-    function log(datetime, content, url, id, logLevel, index) {
+    function log(datetime, content, url, id, logLevel, index,priority) {
       this.datetime = datetime;
       this.content = content;
       this.url = url;
       this.id = id;
       this.logLevel = logLevel;
       this.index = index; //Logfile index on UI
+      this.priority = priority;
     }
 
     function rgb(r, g, b) {
@@ -196,11 +197,11 @@
   return result;
 
     }
-    function sortlogArrByDatetime(a, b) {
+    function sortlogArrByDatetime(a, b) {      
       var aDate = a.datetime;
       var bDate = b.datetime;
       if (aDate.isSame(bDate)) {
-        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : 0));
+        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : (a.priority>b.priority)?1:0));
       }
       return ((aDate < bDate) ? -1 : ((aDate > bDate) ? 1 : 0));
     }
@@ -357,7 +358,8 @@ var fs = require('fs');
         readOnly: true,
         minimap: {
 	  	    enabled: true
-        }
+        },
+        automaticLayout:true
       });
       _editor = editor;
     monaco.editor.setTheme('vs-dark');    
@@ -875,7 +877,7 @@ else
               var logLevelRegexFormat = $("#logLevelRegexFormat").val();
               var logLevelRegex = new RegExp(logLevelRegexFormat, "gm");
               var logLevel = logLevelRegex.exec(arr[i])[1];
-              logArr.push(new log(date, arr[i], file, id, logLevel, index));
+              logArr.push(new log(date, arr[i], file, id, logLevel, index,i));
             } catch (err) {
               console.log(err);
             }
