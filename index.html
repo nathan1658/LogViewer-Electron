@@ -23,12 +23,12 @@
   <script>
     //Remember to escape character here.
     var DEFAULT_DATE_REGEX = "[\\S]+\\s+[\\S]+";
-    var DEFAULT_DATE_FORMAT = "YYYY-MM-DD hh:mm:ss"; 
+    var DEFAULT_DATE_FORMAT = "YYYY-MM-DD hh:mm:ss";
     var DEFAULT_LOG_REGEX_FORMAT = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[\\s\\S]+?((?=^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}|$)(?!\\n|\\s))";
     var DEFAULT_LOG_LEVEL_REGEX_FORMAT = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\S*\\s([\\S]+)";
 
 
-    var RunningInElectron = false;        
+    var RunningInElectron = false;
     var Dialogs = require('dialogs');
     //index of how many log file row
     var iCnt = 0;
@@ -51,7 +51,7 @@
 
     var LOG_LEVELS = ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"];
     //For Monaco editor
-    var decorations = null ;
+    var decorations = null;
 
 
 
@@ -87,7 +87,7 @@
         }
       });
     }
-    function log(datetime, content, url, id, logLevel, index,priority) {
+    function log(datetime, content, url, id, logLevel, index, priority) {
       this.datetime = datetime;
       this.content = content;
       this.url = url;
@@ -187,21 +187,21 @@
     }
 
     function getId() {
-      var result =  Math.random().toString(36).substring(7);
+      var result = Math.random().toString(36).substring(7);
       var firstChar = result.charAt(0);
-      while( firstChar <='9' && firstChar >='0') {
-        result =  Math.random().toString(36).substring(7);
-       firstChar = result.charAt(0);
-}
+      while (firstChar <= '9' && firstChar >= '0') {
+        result = Math.random().toString(36).substring(7);
+        firstChar = result.charAt(0);
+      }
 
-  return result;
+      return result;
 
     }
-    function sortlogArrByDatetime(a, b) {      
+    function sortlogArrByDatetime(a, b) {
       var aDate = a.datetime;
       var bDate = b.datetime;
       if (aDate.isSame(bDate)) {
-        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : (a.priority>b.priority)?1:-1));
+        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : (a.priority > b.priority) ? 1 : 0));
       }
       return ((aDate < bDate) ? -1 : ((aDate > bDate) ? 1 : 0));
     }
@@ -320,54 +320,54 @@
       }
     }
 
-var _editor = null;
-var fs = require('fs');
-		const path = require('path');
-		const amdLoader = require('./node_modules/monaco-editor/min/vs/loader.js');
-		const amdRequire = amdLoader.require;
+    var _editor = null;
+    var fs = require('fs');
+    const path = require('path');
+    const amdLoader = require('./node_modules/monaco-editor/min/vs/loader.js');
+    const amdRequire = amdLoader.require;
     const amdDefine = amdLoader.require.define;
-    
+
     function uriFromPath(_path) {
-			var pathName = path.resolve(_path).replace(/\\/g, '/');
-			if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-				pathName = '/' + pathName;
-			}
-			return encodeURI('file://' + pathName);
-		}
+      var pathName = path.resolve(_path).replace(/\\/g, '/');
+      if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+        pathName = '/' + pathName;
+      }
+      return encodeURI('file://' + pathName);
+    }
 
 
     $(function () {
 
-//Congfig monaco editor
+      //Congfig monaco editor
 
 
 
 
-		amdRequire.config({
-			baseUrl: uriFromPath(path.join(__dirname, './node_modules/monaco-editor/min'))
-		});
-
-		// workaround monaco-css not understanding the environment
-		self.module = undefined;
-
-	amdRequire(['vs/editor/editor.main'], function() {
-			var editor = monaco.editor.create(document.getElementById('container'), {
-				value: [
-					':)'
-				].join('\n'),				
-        readOnly: true,
-        minimap: {
-	  	    enabled: true
-        },
-        automaticLayout:true
+      amdRequire.config({
+        baseUrl: uriFromPath(path.join(__dirname, './node_modules/monaco-editor/min'))
       });
-      _editor = editor;
-    monaco.editor.setTheme('vs-dark');    
+
+      // workaround monaco-css not understanding the environment
+      self.module = undefined;
+
+      amdRequire(['vs/editor/editor.main'], function () {
+        var editor = monaco.editor.create(document.getElementById('container'), {
+          value: [
+            ':)'
+          ].join('\n'),
+          readOnly: true,
+          minimap: {
+            enabled: true
+          },
+          automaticLayout: true
+        });
+        _editor = editor;
+        monaco.editor.setTheme('vs-dark');
 
 
 
-  });
-      
+      });
+
       //End of monaco editor
 
 
@@ -429,7 +429,7 @@ var fs = require('fs');
             onChange: function (hsb, hex, rgb) {
               $(`#${cpId}`).css('backgroundColor', '#' + hex);
               AddOrUpdateCustomCss(`${tmpId}`, '#' + hex);
-//              $(`.${tmpId}`).css('color', '#' + hex);
+              //              $(`.${tmpId}`).css('color', '#' + hex);
             }
           });
           var part1 = `<div style="padding:5px;display:flex;align-items:center;" id="div${iCnt}"> <input type='checkbox' onchange="checkboxOnChange(this,'${tmpId}')" checked/> `;
@@ -660,8 +660,8 @@ var fs = require('fs');
       var rgbString = rgbToString(rgb);
       //updateColorPicker background css and perform update on fonts.
       var newCss = colorPickerCss.replace(/rgb\(.*?\)/gm, rgbString);
-      tmpCp.css('background', newCss);   
-      setCPColorAndUpdate(id,rgbToHex(rgb));
+      tmpCp.css('background', newCss);
+      setCPColorAndUpdate(id, rgbToHex(rgb));
       //$(`.${id}`).css('color', rgbToHex(rgb));
     }
 
@@ -717,7 +717,7 @@ var fs = require('fs');
           return val.toLowerCase().indexOf(e.toLowerCase()) > 0;
         })
       }
-      
+
       var stringArr = [];
       logArr.forEach(function (val) {
         if (!checkedLogFile.includes(val.id))
@@ -733,25 +733,24 @@ var fs = require('fs');
         resultArray.push(val);
         stringArr.push(val.content);
       });
-//For decorations..
-        var tResult = [];
-       resultArray.forEach((e)=>{
-          var te = e.content.split("\n");
-          te.forEach((y)=>
-          {if(y.length>0)
-            {tResult.push({content:y,id:e.id});
+      //For decorations..
+      var tResult = [];
+      resultArray.forEach((e) => {
+        var te = e.content.split("\n");
+        te.forEach((y) => {
+          if (y.length > 0) {
+            tResult.push({ content: y, id: e.id });
           }
-          })
-       });
+        })
+      });
 
-var rangeArr = [];
-        for(var i=0;i<tResult.length;i++)
-        {
-          
-          var tmpText = tResult[i].content;
-            rangeArr.push({ range: new monaco.Range(i+1,1,i+1,tmpText.length+1), options: {  inlineClassName: tResult[i].id}});
-          
-        }
+      var rangeArr = [];
+      for (var i = 0; i < tResult.length; i++) {
+
+        var tmpText = tResult[i].content;
+        rangeArr.push({ range: new monaco.Range(i + 1, 1, i + 1, tmpText.length + 1), options: { inlineClassName: tResult[i].id } });
+
+      }
 
 
       $("#LogArea").empty();
@@ -762,34 +761,34 @@ var rangeArr = [];
 
 
 
-	amdRequire(['vs/editor/editor.main'], function() {
+      amdRequire(['vs/editor/editor.main'], function () {
 
-    //Clear all decorations
-    decorations = _editor.deltaDecorations([], [
-//	{ range: new monaco.Range(3,1,5,1), options: { isWholeLine: true, linesDecorationsClassName: 'myLineDecoration' }},
-	  { range: new monaco.Range(1,0,_editor.viewModel.getLineCount(),24), options: { }},
-    
-    ]);
+        //Clear all decorations
+        decorations = _editor.deltaDecorations([], [
+          //	{ range: new monaco.Range(3,1,5,1), options: { isWholeLine: true, linesDecorationsClassName: 'myLineDecoration' }},
+          { range: new monaco.Range(1, 0, _editor.viewModel.getLineCount(), 24), options: {} },
 
-    _editor.setModel(monaco.editor.createModel(tResult.map(a=>a.content).join('\n'), ''));    
-    
-    decorations = _editor.deltaDecorations(decorations,rangeArr);
-  // decorations = _editor.deltaDecorations(decorations,{ range: new monaco.Range(1,0,999,20), options: {  linesDecorationsClassName:"sadsad"}});
+        ]);
+
+        _editor.setModel(monaco.editor.createModel(tResult.map(a => a.content).join('\n'), ''));
+
+        decorations = _editor.deltaDecorations(decorations, rangeArr);
+        // decorations = _editor.deltaDecorations(decorations,{ range: new monaco.Range(1,0,999,20), options: {  linesDecorationsClassName:"sadsad"}});
 
 
 
-      for (var i = 0; i < idArr.length; i++) {
-        //Get color picker value
-        var tmpString = $('#' + idArr[i] + '_CP').css("background");
-        //append to target class background
-        var rgbStr = tmpString.match(/rgb\(.*?\)/);
+        for (var i = 0; i < idArr.length; i++) {
+          //Get color picker value
+          var tmpString = $('#' + idArr[i] + '_CP').css("background");
+          //append to target class background
+          var rgbStr = tmpString.match(/rgb\(.*?\)/);
 
-        AddOrUpdateCustomCss(idArr[i],rgbStr);
-      }
-  });
+          AddOrUpdateCustomCss(idArr[i], rgbStr);
+        }
+      });
 
       console.timeEnd("forLoop appendText");
-     
+
 
 
       console.timeEnd("updateLogAreaWithFilter");
@@ -811,33 +810,31 @@ var rangeArr = [];
     }
 
 
-function AddOrUpdateCustomCss(cssId, rgbVal)
-{
-  var result;
-var SS = document.styleSheets;
-for(var i=0; i<SS.length; i++) {
-   var s = SS[i];
-   if(s.ownerNode.id=="customCss")
-   result = s;
-}
+    function AddOrUpdateCustomCss(cssId, rgbVal) {
+      var result;
+      var SS = document.styleSheets;
+      for (var i = 0; i < SS.length; i++) {
+        var s = SS[i];
+        if (s.ownerNode.id == "customCss")
+          result = s;
+      }
 
-var cssRule = null;
-for(var i=0; i<result.cssRules.length; i++) {
-   var s = result.cssRules[i];
-   if(s.selectorText=='.'+cssId)
-   {cssRule = s;
-   break
-   }
-}
-if(cssRule==null)//notExist
-{
-  document.getElementById('customCss').innerHTML+=`.${cssId}{color:${rgbVal}}`;
-}
-else
-{
-  cssRule.style.color=rgbVal;
-}
-}
+      var cssRule = null;
+      for (var i = 0; i < result.cssRules.length; i++) {
+        var s = result.cssRules[i];
+        if (s.selectorText == '.' + cssId) {
+          cssRule = s;
+          break
+        }
+      }
+      if (cssRule == null)//notExist
+      {
+        document.getElementById('customCss').innerHTML += `.${cssId}{color:${rgbVal}}`;
+      }
+      else {
+        cssRule.style.color = rgbVal;
+      }
+    }
 
 
 
@@ -877,7 +874,7 @@ else
               var logLevelRegexFormat = $("#logLevelRegexFormat").val();
               var logLevelRegex = new RegExp(logLevelRegexFormat, "gm");
               var logLevel = logLevelRegex.exec(arr[i])[1];
-              logArr.push(new log(date, arr[i], file, id, logLevel, index,i));
+              logArr.push(new log(date, arr[i], file, id, logLevel, index, i));
             } catch (err) {
               console.log(err);
             }
@@ -925,7 +922,7 @@ else
         $("#ControlPanel").animate({ right: 25 });
       }
     }
-    
+
   </script>
 </head>
 
@@ -952,16 +949,16 @@ else
         <h3>Regex Settings</h3>
         <div>
           <label>Regex for date:</label>
-          <input id="dateRegex"/>
+          <input id="dateRegex" />
 
           <label>Datetime format:</label>
-          <input id="dateFormat"/>
+          <input id="dateFormat" />
 
           <label>Log Regex format:</label>
-          <input id="logRegexFormat"/>
+          <input id="logRegexFormat" />
 
           <label>Loglevel Regex format:</label>
-          <input id="logLevelRegexFormat"/>
+          <input id="logLevelRegexFormat" />
         </div>
       </div>
       <hr>
@@ -1065,7 +1062,7 @@ else
         </div>
       </div>
       <hr>
-      <div class="finalRow">          
+      <div class="finalRow">
         <button id="GogogoBtn" onclick="gogogo()"> Go Go Go</button>
         <span id="Timer"></span>
         <div class="loader" style="display: inline-block;vertical-align: middle;visibility: hidden;"></div>
@@ -1076,8 +1073,8 @@ else
     </div>
   </div>
 
-    <div id="container" style="width:100%;height: calc(100% - 35px);"></div>
-     
+  <div id="container" style="width:100%;height: calc(100% - 35px);"></div>
+
 
   </div>
   <style id="customCss"></style>
