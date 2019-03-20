@@ -201,7 +201,7 @@
       var aDate = a.datetime;
       var bDate = b.datetime;
       if (aDate.isSame(bDate)) {
-        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : (a.priority>b.priority)?1:0));
+        return ((a.index < b.index) ? -1 : ((a.index > b.index) ? 1 : (a.priority>b.priority)?1:-1));
       }
       return ((aDate < bDate) ? -1 : ((aDate > bDate) ? 1 : 0));
     }
