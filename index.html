@@ -40,20 +40,22 @@
     var checkedLogLevel = [];
     //Array that stores checked log file(in ID)
     var checkedLogFile = [];
-
     var textFilter = [];
-
     var textIncluded = [];
-
-    var MAX_LOG_FILE = 10;
-
+    var MAX_LOG_FILE = 15;
     var rgbArr = [];
-
     var LOG_LEVELS = ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"];
     //For Monaco editor
     var decorations = null;
 
+    //IsInverted
+  let invertLog = false;
 
+function invertLogClicked()
+{
+  invertLog = !invertLog;
+  updateLogAreaWithFilter();
+}
 
     function readTextFile(file, id, index) {
       return new Promise(function (resolve, reject) {
@@ -733,6 +735,12 @@
         resultArray.push(val);
         stringArr.push(val.content);
       });
+
+      if(invertLog)
+      {
+        resultArray = resultArray.reverse();
+      }
+
       //For decorations..
       var tResult = [];
       resultArray.forEach((e) => {
@@ -1066,9 +1074,11 @@
         <button id="GogogoBtn" onclick="gogogo()"> Go Go Go</button>
         <span id="Timer"></span>
         <div class="loader" style="display: inline-block;vertical-align: middle;visibility: hidden;"></div>
-        <span>Number of log row: </span>
+        <span>Number of log row: </span>		
         <span id="NumOfLog">0</span>
 
+	    	<input type="checkbox" value="Invert" onclick="invertLogClicked()">Invert</checkbox>
+		
       </div>
     </div>
   </div>
