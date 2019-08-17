@@ -844,8 +844,22 @@ function invertLogClicked()
       }
     }
 
+    function autoIncrementFileName(){
+      
+      var rx = /\d\d/
 
 
+      var startingVal  = rx.exec($("#tb1").val())
+      for (var i = 1; i <= iCnt; i++) {
+        var docVal =  $("#tb1").val();
+        var digit = formatNumber(startingVal++);
+        var formattedVal = docVal.replace(/\d\d/,digit)
+        $("#tb" + i).val(formattedVal)
+      }
+    }
+    function formatNumber(number) {
+     return (number < 10 ? '0' : '') + number;
+}
     function gogogo() {
       $(".loader").css("visibility", "visible");
       console.time("gogogo");
@@ -979,6 +993,9 @@ function invertLogClicked()
             <span id="ICntValue">0</span>
             <span>/</span>
             <span id="MAX_LOG_COUNT"></span>
+
+            <input type="button" onclick="autoIncrementFileName()" value="Auto Increment" class="bt" style="float:right"/>
+            
           </div>
           <!--TODO overflow-y..?-->
           <div id="links">
